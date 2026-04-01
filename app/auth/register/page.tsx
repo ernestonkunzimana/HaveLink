@@ -21,7 +21,7 @@ export default function RegisterPage() {
     name: '',
     email: '',
     password: '',
-    role: 'client' as 'admin' | 'manager' | 'worker' | 'client',
+    role: 'buyer' as 'admin' | 'manager' | 'worker' | 'client' | 'cooperative' | 'buyer' | 'government' | 'ngo',
   });
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -43,7 +43,7 @@ export default function RegisterPage() {
   const handleRoleChange = (value: string) => {
     setFormData(prev => ({
       ...prev,
-      role: value as 'admin' | 'manager' | 'worker' | 'client',
+      role: value as 'admin' | 'manager' | 'worker' | 'client' | 'cooperative' | 'buyer' | 'government' | 'ngo',
     }));
   };
 
@@ -58,7 +58,7 @@ export default function RegisterPage() {
           <CardHeader className="text-center">
             <CardTitle className="text-2xl font-bold">Create Account</CardTitle>
             <CardDescription>
-              Join PCS-B-LTD construction management platform
+              Join HarvestLink Marketplace — PCS-B-LTD Platform
             </CardDescription>
           </CardHeader>
           <CardContent>
@@ -140,6 +140,10 @@ export default function RegisterPage() {
                     <SelectValue placeholder="Select your role" />
                   </SelectTrigger>
                   <SelectContent>
+                    <SelectItem value="buyer">🛒 Buyer / Vendor</SelectItem>
+                    <SelectItem value="cooperative">🌾 Cooperative Manager</SelectItem>
+                    <SelectItem value="government">🏛️ Government Official (MINAGRI/RCA)</SelectItem>
+                    <SelectItem value="ngo">❤️ NGO / Donor</SelectItem>
                     <SelectItem value="client">Client</SelectItem>
                     <SelectItem value="worker">Worker</SelectItem>
                     <SelectItem value="manager">Manager</SelectItem>

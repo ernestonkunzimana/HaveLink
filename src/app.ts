@@ -23,6 +23,11 @@ import transactionRoutes from './routes/transactions';
 import auditLogRoutes from './routes/audit-logs';
 import systemLogRoutes from './routes/system-logs';
 import esgMetricRoutes from './routes/esg-metrics';
+import marketplaceRoutes from './routes/marketplace';
+import bidRoutes from './routes/bids';
+import weighingRoutes from './routes/weighing';
+import mobileMoneyRoutes from './routes/mobile-money';
+import complianceRoutes from './routes/compliance';
 
 // Load environment variables
 config();
@@ -72,6 +77,11 @@ app.use(`${apiPrefix}/transactions`, transactionRoutes);
 app.use(`${apiPrefix}/audit-logs`, auditLogRoutes);
 app.use(`${apiPrefix}/system-logs`, systemLogRoutes);
 app.use(`${apiPrefix}/esg-metrics`, esgMetricRoutes);
+app.use(`${apiPrefix}/marketplace`, marketplaceRoutes);
+app.use(`${apiPrefix}/bids`, bidRoutes);
+app.use(`${apiPrefix}/weighing`, weighingRoutes);
+app.use(`${apiPrefix}/mobile-money`, mobileMoneyRoutes);
+app.use(`${apiPrefix}/compliance`, complianceRoutes);
 
 // Health check endpoint
 app.get('/health', (req, res) => {
@@ -107,6 +117,20 @@ io.on('connection', (socket) => {
   // Handle payment notifications
   socket.on('paymentUpdate', (data) => {
     socket.to(`org_${data.organizationId}`).emit('paymentUpdated', data);
+  });
+
+  // Handle marketplace bid notifications
+  socket.on('watchListing', (data) => {
+    if (data.listingId) {
+      socket.join(`listing_${data.listingId}`);
+    }
+  });
+
+  // Handle cooperative room for weighing/bid updates
+  socket.on('joinCooperative', (data) => {
+    if (data.cooperativeId) {
+      socket.join(`cooperative_${data.cooperativeId}`);
+    }
   });
 
   socket.on('disconnect', () => {

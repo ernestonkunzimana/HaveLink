@@ -94,7 +94,105 @@ export interface ESGMetric {
   updatedAt: string;
 }
 
-export interface Badge {
+export interface ProduceListing {
+  id: string;
+  cooperativeId: string;
+  cropName: string;
+  variety?: string;
+  grade?: string;
+  quantityKg: number;
+  availableKg: number;
+  pricePerKg: number;
+  minPricePerKg?: number;
+  currency: string;
+  status: 'draft' | 'active' | 'bidding' | 'sold' | 'expired' | 'cancelled';
+  listingType: 'instant' | 'auction' | 'contract';
+  description?: string;
+  location?: string;
+  district?: string;
+  harvestDate?: string;
+  expiryDate?: string;
+  isOrganic: boolean;
+  cooperative?: { name: string };
+  bids?: Bid[];
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface Bid {
+  id: string;
+  listingId: string;
+  bidderId: string;
+  bidderName?: string;
+  bidPricePerKg: number;
+  quantityKg: number;
+  totalAmount: number;
+  currency: string;
+  status: 'pending' | 'accepted' | 'rejected' | 'withdrawn' | 'countered' | 'expired';
+  message?: string;
+  listing?: ProduceListing;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface WeighingRecord {
+  id: string;
+  deviceId: string;
+  deviceName?: string;
+  cooperativeId?: string;
+  cropName: string;
+  variety?: string;
+  grossWeightKg: number;
+  tareWeightKg: number;
+  netWeightKg: number;
+  moistureContent?: number;
+  qualityGrade?: string;
+  status: string;
+  farmerName?: string;
+  farmerId?: string;
+  ticketNumber?: string;
+  isVerified: boolean;
+  createdAt: string;
+}
+
+export interface MobileMoneyTx {
+  id: string;
+  provider: 'MTN' | 'Airtel' | 'Tigo' | 'Orange';
+  transactionType: string;
+  senderPhone: string;
+  receiverPhone: string;
+  amount: number;
+  currency: string;
+  status: string;
+  internalReference: string;
+  createdAt: string;
+}
+
+export interface PriceFloor {
+  id: string;
+  cropName: string;
+  grade?: string;
+  minPricePerKg: number;
+  maxPricePerKg?: number;
+  referencePricePerKg?: number;
+  currency: string;
+  district?: string;
+  effectiveFrom: string;
+  effectiveTo?: string;
+  isActive: boolean;
+  authority?: string;
+}
+
+export interface Cooperative {
+  id: string;
+  name: string;
+  registrationNumber?: string;
+  district?: string;
+  memberCount: number;
+  primaryCrops?: string[];
+  isVerified: boolean;
+  createdAt: string;
+}
   id: string;
   name: string;
   description: string;
@@ -379,6 +477,169 @@ class ApiClient {
 
   async getRecentActivities(limit = 10): Promise<ApiResponse<any[]>> {
     const response = await this.client.get(`/activities/recent?limit=${limit}`);
+    return response.data;
+  }
+
+  // ==================== HarvestLink Marketplace ====================
+
+  // Marketplace listings
+  async getMarketplaceListings(params?: { cropName?: string; district?: string; status?: string; page?: number; limit?: number }): Promise<ApiResponse<ProduceListing[]>> {
+    const query = new URLSearchParams();
+    if (params?.cropName) query.set('cropName', params.cropName);
+    if (params?.district) query.set('district', params.district);
+    if (params?.status) query.set('status', params.status);
+    if (params?.page) query.set('page', String(params.page));
+    if (params?.limit) query.set('limit', String(params.limit));
+    const response = await this.client.get(`/marketplace?${query.toString()}`);
+    return response.data;
+  }
+
+  async getListing(id: string): Promise<ApiResponse<ProduceListing>> {
+    const response = await this.client.get(`/marketplace/${id}`);
+    return response.data;
+  }
+
+  async createListing(data: Partial<ProduceListing>): Promise<ApiResponse<ProduceListing>> {
+    const response = await this.client.post('/marketplace', data);
+    return response.data;
+  }
+
+  async updateListing(id: string, data: Partial<ProduceListing>): Promise<ApiResponse<ProduceListing>> {
+    const response = await this.client.put(`/marketplace/${id}`, data);
+    return response.data;
+  }
+
+  async deleteListing(id: string): Promise<ApiResponse> {
+    const response = await this.client.delete(`/marketplace/${id}`);
+    return response.data;
+  }
+
+  async getMarketStats(): Promise<ApiResponse<any>> {
+    const response = await this.client.get('/marketplace/stats');
+    return response.data;
+  }
+
+  async getCooperativeListings(cooperativeId: string, page = 1, limit = 20): Promise<ApiResponse<ProduceListing[]>> {
+    const response = await this.client.get(`/marketplace/cooperative/${cooperativeId}?page=${page}&limit=${limit}`);
+    return response.data;
+  }
+
+  // Bidding
+  async getListingBids(listingId: string, page = 1): Promise<ApiResponse<Bid[]>> {
+    const response = await this.client.get(`/bids/listing/${listingId}?page=${page}`);
+    return response.data;
+  }
+
+  async getMyBids(page = 1): Promise<ApiResponse<Bid[]>> {
+    const response = await this.client.get(`/bids/my?page=${page}`);
+    return response.data;
+  }
+
+  async placeBid(data: { listingId: string; bidPricePerKg: number; quantityKg: number; message?: string }): Promise<ApiResponse<Bid>> {
+    const response = await this.client.post('/bids', data);
+    return response.data;
+  }
+
+  async acceptBid(bidId: string): Promise<ApiResponse> {
+    const response = await this.client.post(`/bids/${bidId}/accept`);
+    return response.data;
+  }
+
+  async rejectBid(bidId: string, reason?: string): Promise<ApiResponse> {
+    const response = await this.client.post(`/bids/${bidId}/reject`, { reason });
+    return response.data;
+  }
+
+  async withdrawBid(bidId: string): Promise<ApiResponse> {
+    const response = await this.client.post(`/bids/${bidId}/withdraw`);
+    return response.data;
+  }
+
+  // Weighing
+  async getWeighingRecords(params?: { cooperativeId?: string; page?: number }): Promise<ApiResponse<WeighingRecord[]>> {
+    const query = new URLSearchParams();
+    if (params?.cooperativeId) query.set('cooperativeId', params.cooperativeId);
+    if (params?.page) query.set('page', String(params.page));
+    const response = await this.client.get(`/weighing?${query.toString()}`);
+    return response.data;
+  }
+
+  async recordWeighing(data: Partial<WeighingRecord>): Promise<ApiResponse<WeighingRecord>> {
+    const response = await this.client.post('/weighing', data);
+    return response.data;
+  }
+
+  async getWeighingStats(cooperativeId?: string): Promise<ApiResponse<any>> {
+    const query = cooperativeId ? `?cooperativeId=${cooperativeId}` : '';
+    const response = await this.client.get(`/weighing/stats${query}`);
+    return response.data;
+  }
+
+  async verifyWeighingRecord(id: string): Promise<ApiResponse> {
+    const response = await this.client.post(`/weighing/${id}/verify`);
+    return response.data;
+  }
+
+  // Mobile Money
+  async getMobileMoneyTransactions(page = 1): Promise<ApiResponse<MobileMoneyTx[]>> {
+    const response = await this.client.get(`/mobile-money?page=${page}`);
+    return response.data;
+  }
+
+  async initiateMobileMoneyPayment(data: {
+    provider: 'MTN' | 'Airtel' | 'Tigo' | 'Orange';
+    transactionType: 'payment' | 'payout' | 'escrow' | 'refund' | 'escrow_release';
+    senderPhone: string;
+    receiverPhone: string;
+    amount: number;
+    bidId?: string;
+    listingId?: string;
+  }): Promise<ApiResponse<{ id: string; internalReference: string; status: string }>> {
+    const response = await this.client.post('/mobile-money/initiate', data);
+    return response.data;
+  }
+
+  async releaseMobileMoneyEscrow(txId: string): Promise<ApiResponse> {
+    const response = await this.client.post(`/mobile-money/${txId}/release-escrow`);
+    return response.data;
+  }
+
+  async getMobileMoneyStatus(reference: string): Promise<ApiResponse<MobileMoneyTx>> {
+    const response = await this.client.get(`/mobile-money/status/${reference}`);
+    return response.data;
+  }
+
+  // Compliance & Price Floors
+  async getPriceFloors(params?: { cropName?: string; district?: string; activeOnly?: boolean }): Promise<ApiResponse<PriceFloor[]>> {
+    const query = new URLSearchParams();
+    if (params?.cropName) query.set('cropName', params.cropName);
+    if (params?.district) query.set('district', params.district);
+    if (params?.activeOnly) query.set('activeOnly', 'true');
+    const response = await this.client.get(`/compliance/price-floors?${query.toString()}`);
+    return response.data;
+  }
+
+  async setPriceFloor(data: Partial<PriceFloor>): Promise<ApiResponse<PriceFloor>> {
+    const response = await this.client.post('/compliance/price-floors', data);
+    return response.data;
+  }
+
+  async updatePriceFloor(id: string, data: Partial<PriceFloor>): Promise<ApiResponse<PriceFloor>> {
+    const response = await this.client.put(`/compliance/price-floors/${id}`, data);
+    return response.data;
+  }
+
+  async getComplianceReport(params?: { startDate?: string; endDate?: string; district?: string }): Promise<ApiResponse<any>> {
+    const query = new URLSearchParams();
+    if (params?.startDate) query.set('startDate', params.startDate);
+    if (params?.endDate) query.set('endDate', params.endDate);
+    if (params?.district) query.set('district', params.district);
+    const response = await this.client.get(`/compliance/report?${query.toString()}`);
+    return response.data;
+  }
+
+  async getMarketTrends(cropName: string, days = 30): Promise<ApiResponse<any>> {
+    const response = await this.client.get(`/compliance/trends/${encodeURIComponent(cropName)}?days=${days}`);
     return response.data;
   }
 }

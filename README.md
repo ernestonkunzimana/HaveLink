@@ -20,7 +20,7 @@
 
 *A full-stack, enterprise-grade construction project management platform with real-time collaboration, ESG tracking, multi-language support, and offline-first PWA architecture.*
 
-[🚀 Live Demo](#) · [📋 Documentation](#table-of-contents) · [🐛 Report Bug](https://github.com/ernestonkunzimana/pcs-b-ltd/issues) · [✨ Request Feature](https://github.com/ernestonkunzimana/pcs-b-ltd/issues)
+[📋 Documentation](#table-of-contents) · [🐛 Report Bug](https://github.com/ernestonkunzimana/pcs-b-ltd/issues) · [✨ Request Feature](https://github.com/ernestonkunzimana/pcs-b-ltd/issues)
 
 </div>
 
@@ -51,7 +51,7 @@
 
 The platform is designed for construction companies operating across **East Africa and beyond**, with first-class support for low-connectivity environments, multiple languages, and ESG (Environmental, Social & Governance) compliance reporting.
 
-> 🏆 **Highlights:** 500+ projects managed · 1,200+ team members · 12+ countries served · 5 languages supported
+> 🏆 **Platform capacity:** 500+ projects · 1,200+ team members · 12+ countries supported · 5 languages
 
 ---
 

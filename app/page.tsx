@@ -14,11 +14,19 @@ import {
   Wifi, 
   Award,
   CheckCircle2,
-  Star 
+  Star,
+  Wheat,
+  Scale,
+  Gavel,
+  DollarSign,
+  MapPin,
+  TrendingUp,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
+
+const DEFAULT_DASHBOARD_ROUTE = '/dashboard/buyer';
 
 export default function LandingPage() {
   const { isAuthenticated, user } = useAuth();
@@ -26,71 +34,93 @@ export default function LandingPage() {
 
   useEffect(() => {
     if (isAuthenticated && user) {
-      const roleRedirects = {
+      const roleRedirects: Record<string, string> = {
         admin: '/dashboard/admin',
         manager: '/dashboard/manager',
         worker: '/dashboard/worker',
         client: '/dashboard/client',
+        cooperative: '/dashboard/cooperative',
+        buyer: '/dashboard/buyer',
+        government: '/dashboard/government',
+        ngo: '/dashboard/ngo',
       };
-      router.push(roleRedirects[user.role as keyof typeof roleRedirects] || '/dashboard');
+      router.push(roleRedirects[user.role as string] || DEFAULT_DASHBOARD_ROUTE);
     }
   }, [isAuthenticated, user, router]);
 
   const features = [
     {
-      icon: Shield,
-      title: 'Role-Based Access Control',
-      description: 'Secure authentication with granular permissions for admins, managers, workers, and clients.',
-      color: 'text-blue-600',
-    },
-    {
-      icon: Users,
-      title: 'Project Management',
-      description: 'Comprehensive project tracking with real-time updates and collaboration tools.',
+      icon: Wheat,
+      title: 'Produce Marketplace',
+      description: 'List and discover fresh farm produce. Support for instant sales, auctions, and contract arrangements.',
       color: 'text-green-600',
     },
     {
-      icon: BarChart,
-      title: 'ESG Metrics',
-      description: 'Track environmental, social, and governance metrics for sustainable construction.',
+      icon: Scale,
+      title: 'Smart Weighing System',
+      description: 'IoT-enabled bulk weighing (200kg–3 tons) with automated ticket generation and quality grading.',
+      color: 'text-blue-600',
+    },
+    {
+      icon: Gavel,
+      title: 'Real-Time Bidding',
+      description: 'Competitive bidding for produce with instant notifications and automated escrow protection.',
       color: 'text-purple-600',
+    },
+    {
+      icon: DollarSign,
+      title: 'Mobile Money Payments',
+      description: 'MTN and Airtel Money integration with escrow logic to protect buyers and sellers.',
+      color: 'text-orange-600',
+    },
+    {
+      icon: Shield,
+      title: 'Government Compliance',
+      description: 'Price floor enforcement, tax reporting, and policy dashboards for MINAGRI and RCA.',
+      color: 'text-indigo-600',
+    },
+    {
+      icon: BarChart,
+      title: 'Analytics & Traceability',
+      description: 'Export-ready market data, seasonal forecasting, and buyer mapping for informed decisions.',
+      color: 'text-pink-600',
     },
     {
       icon: Globe,
       title: 'Multi-Language Support',
-      description: 'Available in English, Swahili, French, Kinyarwanda, and Luganda.',
-      color: 'text-orange-600',
+      description: 'Available in English, Kinyarwanda, French, Swahili, and Luganda for inclusive access.',
+      color: 'text-teal-600',
     },
     {
       icon: Smartphone,
-      title: 'Progressive Web App',
-      description: 'Install on any device with native app-like experience and offline capabilities.',
-      color: 'text-pink-600',
+      title: 'Offline-First PWA',
+      description: 'Works without internet connectivity — essential for rural cooperative environments.',
+      color: 'text-red-600',
     },
     {
       icon: Wifi,
       title: 'Real-Time Updates',
-      description: 'Instant notifications and live collaboration with Socket.io integration.',
-      color: 'text-indigo-600',
+      description: 'Live bid notifications, weighing alerts, and payment confirmations via Socket.IO.',
+      color: 'text-cyan-600',
     },
   ];
 
   const benefits = [
-    'Streamlined project management workflow',
-    'Real-time communication and updates',
-    'Comprehensive inventory tracking',
-    'Financial transaction management',
-    'ESG compliance monitoring',
-    'Multi-language accessibility',
-    'Offline-first architecture',
-    'Gamification and engagement features',
+    'Real-time produce marketplace for cooperatives',
+    'IoT-enabled smart weighing and quality grading',
+    'Competitive bidding with escrow payment protection',
+    'MTN & Airtel Money integration',
+    'Government price floor enforcement',
+    'Impact tracking for NGOs and donors',
+    'Multi-language for rural inclusivity',
+    'Offline-first PWA for remote areas',
   ];
 
   const stats = [
-    { label: 'Projects Managed', value: '500+', icon: Shield },
-    { label: 'Team Members', value: '1,200+', icon: Users },
-    { label: 'Countries Served', value: '12+', icon: Globe },
-    { label: 'Languages Supported', value: '5', icon: Award },
+    { label: 'Cooperatives Onboarded', value: '48+', icon: Users },
+    { label: 'Farmers Reached', value: '1,300+', icon: Wheat },
+    { label: 'Countries Served', value: '3+', icon: Globe },
+    { label: 'Tonnes Traded', value: '248+', icon: Scale },
   ];
 
   return (
@@ -100,10 +130,13 @@ export default function LandingPage() {
         <div className="container mx-auto px-4 py-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 bg-primary rounded-lg flex items-center justify-center text-white font-bold text-xl">
-                P
+              <div className="w-10 h-10 bg-green-600 rounded-lg flex items-center justify-center text-white font-bold text-xl">
+                <span role="img" aria-label="HarvestLink logo">🌾</span>
               </div>
-              <span className="font-bold text-xl text-gray-800">PCS-B-LTD</span>
+              <div>
+                <span className="font-bold text-xl text-gray-800">HarvestLink</span>
+                <span className="text-xs block text-gray-500 -mt-1">by PCS-B-LTD</span>
+              </div>
             </div>
             <div className="flex items-center gap-4">
               <Button 
@@ -115,7 +148,7 @@ export default function LandingPage() {
               </Button>
               <Button 
                 onClick={() => router.push('/auth/register')}
-                className="flex items-center gap-2"
+                className="flex items-center gap-2 bg-green-600 hover:bg-green-700"
               >
                 Get Started
                 <ArrowRight className="w-4 h-4" />
@@ -134,26 +167,27 @@ export default function LandingPage() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8 }}
             >
-              <Badge className="mb-6 bg-blue-100 text-blue-800 border-blue-200">
-                🚀 Now Available as PWA
+              <Badge className="mb-6 bg-green-100 text-green-800 border-green-200">
+                🌾 Africa's Agricultural Commerce Platform
               </Badge>
               <h1 className="text-5xl lg:text-7xl font-bold text-gray-900 mb-6">
-                Professional
-                <span className="text-primary"> Construction</span>
-                <br />
-                Management
+                HarvestLink
+                <span className="text-green-600"> Marketplace</span>
               </h1>
-              <p className="text-xl text-gray-600 mb-8 max-w-2xl mx-auto">
-                Streamline your construction projects with our comprehensive management platform. 
-                Real-time updates, multi-language support, and offline capabilities.
+              <p className="text-xl text-gray-600 mb-4 max-w-2xl mx-auto">
+                Smart agricultural commerce ecosystem for cooperatives, farmers, buyers, and governments.
+                IoT weighing, real-time bidding, and mobile money — all in one platform.
+              </p>
+              <p className="text-sm text-gray-500 mb-8">
+                🇷🇼 Built for Rwanda & East Africa • Supports MTN & Airtel Money • Works Offline
               </p>
               <div className="flex flex-col sm:flex-row gap-4 justify-center">
                 <Button 
                   size="lg" 
                   onClick={() => router.push('/auth/register')}
-                  className="text-lg px-8 py-6"
+                  className="text-lg px-8 py-6 bg-green-600 hover:bg-green-700"
                 >
-                  Start Free Trial
+                  Join the Marketplace
                   <ArrowRight className="w-5 h-5 ml-2" />
                 </Button>
                 <Button 
@@ -165,14 +199,34 @@ export default function LandingPage() {
                   Sign In
                 </Button>
               </div>
+
+              {/* Role Quick Links */}
+              <div className="flex flex-wrap gap-3 justify-center mt-8">
+                {[
+                  { label: '🌾 Cooperative', path: '/dashboard/cooperative' },
+                  { label: '🛒 Buyer', path: '/dashboard/buyer' },
+                  { label: '🏛️ Government', path: '/dashboard/government' },
+                  { label: '❤️ NGO/Donor', path: '/dashboard/ngo' },
+                ].map(role => (
+                  <Button
+                    key={role.label}
+                    variant="outline"
+                    size="sm"
+                    onClick={() => router.push('/auth/login')}
+                    className="text-sm"
+                  >
+                    {role.label}
+                  </Button>
+                ))}
+              </div>
             </motion.div>
           </div>
         </div>
         
         {/* Background decoration */}
         <div className="absolute inset-0 -z-10">
-          <div className="absolute top-20 left-10 w-72 h-72 bg-blue-200 rounded-full opacity-20 blur-3xl animate-pulse" />
-          <div className="absolute bottom-20 right-10 w-72 h-72 bg-purple-200 rounded-full opacity-20 blur-3xl animate-pulse" />
+          <div className="absolute top-20 left-10 w-72 h-72 bg-green-200 rounded-full opacity-20 blur-3xl animate-pulse" />
+          <div className="absolute bottom-20 right-10 w-72 h-72 bg-yellow-200 rounded-full opacity-20 blur-3xl animate-pulse" />
         </div>
       </section>
 
@@ -205,11 +259,10 @@ export default function LandingPage() {
         <div className="container mx-auto px-4">
           <div className="text-center mb-16">
             <h2 className="text-4xl font-bold text-gray-900 mb-4">
-              Everything You Need to Manage Construction Projects
+              Everything You Need for Agricultural Commerce
             </h2>
             <p className="text-xl text-gray-600 max-w-2xl mx-auto">
-              From project planning to completion, our platform provides all the tools 
-              you need for successful construction management.
+              From IoT weighing to escrow payments, HarvestLink covers the full post-harvest trade lifecycle.
             </p>
           </div>
           
@@ -245,10 +298,10 @@ export default function LandingPage() {
           <div className="max-w-4xl mx-auto">
             <div className="text-center mb-16">
               <h2 className="text-4xl font-bold text-gray-900 mb-4">
-                Why Choose PCS-B-LTD?
+                Why HarvestLink?
               </h2>
               <p className="text-xl text-gray-600">
-                Experience the benefits of modern construction management
+                Empowering farmers, streamlining cooperative trade, enabling data-driven decisions
               </p>
             </div>
             
@@ -272,7 +325,7 @@ export default function LandingPage() {
       </section>
 
       {/* CTA Section */}
-      <section className="py-20 bg-primary text-white">
+      <section className="py-20 bg-green-700 text-white">
         <div className="container mx-auto px-4 text-center">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -281,11 +334,11 @@ export default function LandingPage() {
             viewport={{ once: true }}
           >
             <h2 className="text-4xl font-bold mb-6">
-              Ready to Transform Your Construction Management?
+              Ready to Transform Agricultural Trade?
             </h2>
-            <p className="text-xl mb-8 text-blue-100 max-w-2xl mx-auto">
-              Join thousands of construction professionals who trust PCS-B-LTD 
-              to manage their projects efficiently and effectively.
+            <p className="text-xl mb-8 text-green-100 max-w-2xl mx-auto">
+              Join cooperatives, buyers, and government agencies across East Africa 
+              using HarvestLink to digitize post-harvest commerce.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Button 
@@ -294,14 +347,14 @@ export default function LandingPage() {
                 onClick={() => router.push('/auth/register')}
                 className="text-lg px-8 py-6"
               >
-                Start Your Free Trial
+                Start Free Trial
                 <ArrowRight className="w-5 h-5 ml-2" />
               </Button>
               <Button 
                 size="lg" 
                 variant="outline"
                 onClick={() => router.push('/auth/login')}
-                className="text-lg px-8 py-6 border-white text-white hover:bg-white hover:text-primary"
+                className="text-lg px-8 py-6 border-white text-white hover:bg-white hover:text-green-700"
               >
                 Sign In Now
               </Button>
@@ -315,21 +368,25 @@ export default function LandingPage() {
         <div className="container mx-auto px-4">
           <div className="text-center">
             <div className="flex items-center justify-center gap-3 mb-4">
-              <div className="w-10 h-10 bg-primary rounded-lg flex items-center justify-center text-white font-bold text-xl">
-                P
+              <div className="w-10 h-10 bg-green-600 rounded-lg flex items-center justify-center text-white font-bold text-xl">
+                <span role="img" aria-label="HarvestLink logo">🌾</span>
               </div>
-              <span className="font-bold text-xl">PCS-B-LTD</span>
+              <div>
+                <span className="font-bold text-xl">HarvestLink</span>
+                <span className="text-xs block text-gray-400 -mt-1">by PCS-B-LTD</span>
+              </div>
             </div>
             <p className="text-gray-400 mb-4">
-              Professional Construction Services Management Platform
+              Smart Agricultural Commerce Ecosystem for Africa
             </p>
             <div className="flex justify-center gap-6 text-sm text-gray-400">
               <a href="#" className="hover:text-white transition-colors">Privacy Policy</a>
               <a href="#" className="hover:text-white transition-colors">Terms of Service</a>
               <a href="#" className="hover:text-white transition-colors">Support</a>
+              <a href="#" className="hover:text-white transition-colors">API Docs</a>
             </div>
             <div className="mt-8 pt-8 border-t border-gray-800 text-sm text-gray-400">
-              © 2024 PCS-B-LTD. All rights reserved.
+              © 2024 PCS-B-LTD / HarvestLink. All rights reserved. Built for Rwanda & East Africa.
             </div>
           </div>
         </div>
